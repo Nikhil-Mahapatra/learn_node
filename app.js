@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname,'public')));
 app.get('/', routes.index);
 
 app.post('/createdb', function(req, res){
-      nano.db.create(req.body.dbname, function(err){
+      nano.db.create(req.body.dbname, function(){
             if(err){
                   res.send('Error creating database'+ req.body.dbname);
                   return;
@@ -36,9 +36,9 @@ app.post('/createdb', function(req, res){
 
 app.post('/new_contact', function(req, res){
       var name = req.body.name;
-      var phone = req.bosy.phone;
+      var phone = req.body.phone;
 
-      db.insert({name: name, phone:phone, crazy:true}, phone, function(err, bosy, header){
+      db.insert({name: name, phone: phone, crazy:true}, phone, function(err, body, header){
             if(err){
                   res.send('Error creating contact')
                   return;
@@ -47,14 +47,14 @@ app.post('/new_contact', function(req, res){
       });
 });
 
-app.post('./view_contact', function(req, res){
+app.post('/view_contact', function(req, res){
       var alldoc = "Following are all the contact";
       db.get(req.body.phone, {revs_info:true}, function(err, body){
             if(!err){
                   console.log(body);
             }
             if(body){
-                  alldoc += "Name: "+body.name+"</br>Phone number: "+body.phone;
+                  alldoc += "</br>Name: "+body.name+"</br>Phone number: "+body.phone;
             }
             else{
                   alldoc = "No records found";
@@ -66,7 +66,7 @@ app.post('./view_contact', function(req, res){
 app.post('/delete_contact', function(req, res){
       db.get(req.body.phone, {revs_info:true}, function(err, body){
             if(!err){
-                  db.destroy(req.bosy.phone, body._rev, function(err, body){
+                  db.destroy(req.body.phone, body._rev, function(err, body){
                         if(err){
                               res.send("Error deleting contact");
                         }
